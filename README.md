@@ -1,5 +1,6 @@
 <a name="module_is24"></a>
 ## is24
+Node.js module for interacting with the Immobilienscout24 API
 
 * [is24](#module_is24)
   * [~getARealestate(id, cb)](#module_is24..getARealestate)
