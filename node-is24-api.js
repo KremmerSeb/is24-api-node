@@ -1,4 +1,4 @@
-/** @module is2 */
+/** @module is24 */
 var oauth = require('oauth');
 var qs = require('qs');
 var IS24 = function(options) {
@@ -23,16 +23,6 @@ var IS24 = function(options) {
     return this;
 };
 
-IS24.prototype.getRequestToken = function(callback) {
-    this.oa.getOAuthRequestToken(function(error, accessToken, tokenSecret, results) {
-        if (error) {
-            callback(error);
-        } else {
-            callback(null, accessToken, tokenSecret, results);
-        }
-    });
-};
-
 /**
  * Get a realestate by id
  * @method getARealestate
@@ -54,7 +44,6 @@ IS24.prototype.getARealestate = function(id, cb) {
       }
   });
 };
-
 
 /**
  * Get all realestate
@@ -82,7 +71,6 @@ IS24.prototype.getAllRealestate = function(cb) {
  * @method postARealestate
  * @param {object} realestate - the realestate object
  * @param {requestCallback} cb - the callback that handles the response
- *
  */
 IS24.prototype.postARealestate = function(realestate, cb) {
     var path = '/realestate';
@@ -99,13 +87,14 @@ IS24.prototype.postARealestate = function(realestate, cb) {
         }
     });
 };
- /**
-  * Do post
-  * @method doPost
-  * @param {string} url - the url
-  * @param {string} body - the realestate object
-  * @param {requestCallback} cb - the callback that handles the response
-  */
+
+/**
+ * Do post
+ * @method doPost
+ * @param {string} url - the url
+ * @param {string} body - the realestate object
+ * @param {requestCallback} cb - the callback that handles the response
+ */
 IS24.prototype.doPost = function(url, body, cb) {
     // Fix the mismatch between OAuth's  RFC3986's and Javascript's beliefs in what is right and wrong ;)
     // From https://github.com/ttezel/twit/blob/master/lib/oarequest.js
@@ -114,7 +103,7 @@ IS24.prototype.doPost = function(url, body, cb) {
         .replace(/\(/g, "%28")
         .replace(/\)/g, "%29")
         .replace(/\*/g, "%2A");
-    this.oa.post(url, this.accessToken, this.tokenSecret, body, "application/json;charset=utf-8", function(err, data, res) {
+    this.oa.post(url, this.accessToken, this.tokenSecret, body, "application/xml", function(err, data, res) {
         if (!err && res.statusCode == 200) {
             cb(null, data, res);
         } else {
@@ -123,6 +112,7 @@ IS24.prototype.doPost = function(url, body, cb) {
     });
 
 };
+
 /**
  * Do request
  * @method doRequest
@@ -132,7 +122,6 @@ IS24.prototype.doPost = function(url, body, cb) {
  */
 IS24.prototype.doRequest = function(url, params, cb) {
     var url = url + this.buildQS(params);
-    console.log(url);
     // Fix the mismatch between OAuth's  RFC3986's and Javascript's beliefs in what is right and wrong ;)
     // From https://github.com/ttezel/twit/blob/master/lib/oarequest.js
     url = url.replace(/\!/g, "%21")
@@ -145,27 +134,6 @@ IS24.prototype.doRequest = function(url, params, cb) {
             cb(null, data, res);
         } else {
             cb(err, data, res);
-        }
-    });
-};
-
-/**
- * This callback is displayed as a global member.
- * @callback requestCallback
- * @param {(object|null)} err - the error or null
- * @param {object} data - the requested data
- * @param {object} res - the complete response
- */
-IS24.prototype.countRealestates = function(callback) {
-    this.oa.get(this.baseUrl + "/realestatecounts", this.accessToken, this.tokenSecret, function(err, data, res) {
-        if (err) {
-            callback(err, data, res, this.baseUrl+"/realestatecounts");
-        } else {
-            try {
-                callback(null, data, res);
-            } catch (e) {
-                callback (e, data, res);
-            }
         }
     });
 };
